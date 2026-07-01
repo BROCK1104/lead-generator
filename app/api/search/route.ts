@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { AppError } from "@/lib/errors";
-import { isValidDomain, normalizeDomain } from "@/lib/domain";
+import { isBlockedLookupDomain, isValidDomain, normalizeDomain } from "@/lib/domain";
 import { searchDatasetForTitles } from "@/services/quickenrich";
 import type { ContactSearchRequest, ContactSearchResponse } from "@/types/contacts";
 
@@ -16,6 +16,7 @@ export async function POST(request: Request) {
 
     if (!website) throw new AppError("Enter a company website before searching.", 400, "INVALID_WEBSITE");
     if (!isValidDomain(website)) throw new AppError("Enter a real company domain, like restaurantgroup.com. Company names or broad categories can return irrelevant contacts and will not be searched.", 400, "INVALID_WEBSITE");
+    if (isBlockedLookupDomain(website)) throw new AppError("Enter the company's own website domain, not LinkedIn, Google, Yelp, delivery apps, or directory pages. This prevents spending credits on unrelated leads.", 400, "INVALID_WEBSITE");
     if (!titles.length) throw new AppError("Choose at least one job title.", 400, "NO_TITLES");
 
     const contacts = await searchDatasetForTitles({ website, titles }, body.apiKey);

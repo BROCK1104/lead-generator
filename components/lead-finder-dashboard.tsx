@@ -64,7 +64,7 @@ export function LeadFinderDashboard() {
         <div>
           <p className="text-sm font-semibold uppercase tracking-wide text-primary">QuickEnrich-powered prospecting</p>
           <h1 className="mt-2 text-3xl font-bold tracking-tight md:text-5xl">Polynovea Lead Finder</h1>
-          <p className="mt-3 max-w-2xl text-muted-foreground">Find restaurant, cafe, and hospitality decision makers without exposing your production API key in the browser.</p>
+          <p className="mt-3 max-w-2xl text-muted-foreground">Find restaurant, cafe, and hospitality decision makers from exact company domains without exposing your production API key in the browser.</p>
         </div>
         <div className="grid grid-cols-3 gap-2 text-center">
           <Card><CardContent className="p-4"><p className="text-2xl font-bold">{contacts.length}</p><p className="text-xs text-muted-foreground">Contacts</p></CardContent></Card>
@@ -76,9 +76,9 @@ export function LeadFinderDashboard() {
       <div className="grid gap-5 xl:grid-cols-[420px_minmax(0,1fr)]">
         <div className="space-y-5">
           <Card>
-            <CardHeader><CardTitle>Search Contacts</CardTitle><CardDescription>Enter the exact company domain before searching. Broad names or categories are blocked to avoid irrelevant leads.</CardDescription></CardHeader>
+            <CardHeader><CardTitle>Search Contacts</CardTitle><CardDescription>Enter the exact company-owned website before searching. Broad names, LinkedIn URLs, and directory pages are blocked to avoid irrelevant leads.</CardDescription></CardHeader>
             <CardContent className="space-y-5">
-              <div className="space-y-2"><Label htmlFor="website">Company Website</Label><Input id="website" ref={websiteRef} value={website} onChange={(event) => setWebsite(event.target.value)} placeholder="example.com" /><p className="text-xs text-muted-foreground">Use the exact business domain only. Example: acmehospitality.com, not Acme Hospitality Group.</p></div>
+              <div className="space-y-2"><Label htmlFor="website">Company Website</Label><Input id="website" ref={websiteRef} value={website} onChange={(event) => setWebsite(event.target.value)} placeholder="example.com" /><p className="text-xs text-muted-foreground">Use the company's own domain only. Example: poptates.com, not LinkedIn, Google Maps, Yelp, or a hospitality group name.</p></div>
               <div className="space-y-2"><Label>Job Titles</Label><TitlePicker selected={titles} onChange={setTitles} /></div>
               {message ? <div className="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">{message}</div> : null}
               <Button className="w-full" size="lg" onClick={searchContacts} disabled={loading}>{loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />} Search Contacts</Button>

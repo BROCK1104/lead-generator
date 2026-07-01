@@ -14,6 +14,28 @@ export function isValidDomain(value: string) {
   return /^[a-z0-9-]+(\.[a-z0-9-]+)+$/.test(domain) && !domain.includes("..");
 }
 
+const blockedLookupDomains = new Set([
+  "linkedin.com",
+  "facebook.com",
+  "instagram.com",
+  "x.com",
+  "twitter.com",
+  "google.com",
+  "maps.google.com",
+  "yelp.com",
+  "tripadvisor.com",
+  "opentable.com",
+  "zomato.com",
+  "swiggy.com",
+  "ubereats.com",
+  "doordash.com"
+]);
+
+export function isBlockedLookupDomain(value: string) {
+  const domain = normalizeDomain(value);
+  return Array.from(blockedLookupDomains).some((blocked) => domain === blocked || domain.endsWith("." + blocked));
+}
+
 export function domainsMatch(candidate: string, requested: string) {
   const cleanCandidate = normalizeDomain(candidate);
   const cleanRequested = normalizeDomain(requested);
