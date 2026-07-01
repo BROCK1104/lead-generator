@@ -27,6 +27,7 @@ export interface QuickEnrichRawContact {
   website?: string;
   domain?: string;
   company_url?: string;
+  email_domain?: string;
   [key: string]: unknown;
 }
 

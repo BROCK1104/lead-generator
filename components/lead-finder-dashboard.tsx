@@ -76,9 +76,9 @@ export function LeadFinderDashboard() {
       <div className="grid gap-5 xl:grid-cols-[420px_minmax(0,1fr)]">
         <div className="space-y-5">
           <Card>
-            <CardHeader><CardTitle>Search Contacts</CardTitle><CardDescription>Enter a company website and pick the decision-maker titles to search.</CardDescription></CardHeader>
+            <CardHeader><CardTitle>Search Contacts</CardTitle><CardDescription>Enter the exact company domain before searching. Broad names or categories are blocked to avoid irrelevant leads.</CardDescription></CardHeader>
             <CardContent className="space-y-5">
-              <div className="space-y-2"><Label htmlFor="website">Company Website</Label><Input id="website" ref={websiteRef} value={website} onChange={(event) => setWebsite(event.target.value)} placeholder="example.com" /></div>
+              <div className="space-y-2"><Label htmlFor="website">Company Website</Label><Input id="website" ref={websiteRef} value={website} onChange={(event) => setWebsite(event.target.value)} placeholder="example.com" /><p className="text-xs text-muted-foreground">Use the exact business domain only. Example: acmehospitality.com, not Acme Hospitality Group.</p></div>
               <div className="space-y-2"><Label>Job Titles</Label><TitlePicker selected={titles} onChange={setTitles} /></div>
               {message ? <div className="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">{message}</div> : null}
               <Button className="w-full" size="lg" onClick={searchContacts} disabled={loading}>{loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />} Search Contacts</Button>

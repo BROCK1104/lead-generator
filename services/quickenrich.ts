@@ -1,5 +1,6 @@
 import { AppError, friendlyQuickEnrichError } from "@/lib/errors";
 import { mergeContacts, normalizeContact } from "@/lib/contact-normalizer";
+import { companyNameMatchesDomain, domainsMatch, normalizeDomain } from "@/lib/domain";
 import type { Contact } from "@/types/contacts";
 import type { QuickEnrichEnvelope, QuickEnrichRawContact, QuickEnrichSearchInput } from "@/types/quickenrich";
 
@@ -79,6 +80,14 @@ async function requestPost<T>(path: string, body: Record<string, unknown>, apiKe
   return parsed as T;
 }
 
+
+function contactMatchesRequestedDomain(raw: QuickEnrichRawContact, requestedWebsite: string) {
+  const candidates = [raw.company_url, raw.website, raw.domain];
+  const hasMatchingDomain = candidates.some((candidate) => typeof candidate === "string" && domainsMatch(candidate, requestedWebsite));
+  const companyName = typeof raw.company_name === "string" ? raw.company_name : typeof raw.company === "string" ? raw.company : "";
+  return hasMatchingDomain && companyNameMatchesDomain(companyName, requestedWebsite);
+}
+
 function extractContacts(payload: QuickEnrichEnvelope): QuickEnrichRawContact[] {
   const candidates = [payload.contacts, payload.results, payload.employees, payload.data];
   for (const candidate of candidates) {
@@ -94,12 +103,15 @@ function extractContacts(payload: QuickEnrichEnvelope): QuickEnrichRawContact[] 
 }
 
 export async function datasetSearch(input: QuickEnrichSearchInput, apiKey?: string): Promise<Contact[]> {
+  const website = normalizeDomain(input.website);
   const payload = await requestGet<QuickEnrichEnvelope>(endpoints.datasetSearch, {
-    company_url: input.website,
+    company_url: website,
     title: input.title,
     page: 1
   }, apiKey);
-  return extractContacts(payload).map((raw) => normalizeContact(raw, input.website, input.title));
+  return extractContacts(payload)
+    .filter((raw) => contactMatchesRequestedDomain(raw, website))
+    .map((raw) => normalizeContact(raw, website, input.title));
 }
 
 export async function employeeSearch(input: QuickEnrichSearchInput & { linkedinUrl?: string; firstName?: string; lastName?: string }, apiKey?: string) {

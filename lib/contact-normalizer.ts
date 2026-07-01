@@ -23,7 +23,7 @@ export function normalizeContact(raw: QuickEnrichRawContact, website: string, se
   const linkedin = stringValue(raw.linkedin ?? raw.linkedin_url ?? raw.employee_linkedin);
   const title = stringValue(raw.job_title ?? raw.title) || searchedTitle || "Decision maker";
   const company = stringValue(raw.company ?? raw.company_name) || website;
-  const site = stringValue(raw.website ?? raw.domain ?? raw.company_url) || website;
+  const site = stringValue(raw.website ?? raw.domain ?? raw.company_url ?? raw.email_domain) || website;
   const fingerprint = [email, linkedin, phone, names.name, title, company].filter(Boolean).join("|").toLowerCase();
 
   return {
