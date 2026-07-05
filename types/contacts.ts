@@ -24,4 +24,14 @@ export interface ContactSearchResponse {
   warnings?: string[];
 }
 
+export interface LinkedInEnrichRequest {
+  linkedinUrl: string;
+  apiKey?: string;
+}
+
+export interface LinkedInEnrichResponse {
+  contact: Contact | null;
+  warnings?: string[];
+}
+
 export type SortKey = "name" | "title" | "company";

@@ -1,13 +1,13 @@
 # Polynovea Lead Finder
 
-A production-oriented Next.js 15 dashboard for finding restaurant, cafe, and hospitality decision makers with the QuickEnrich API.
+A production-oriented Next.js 15 dashboard for enriching restaurant, cafe, and hospitality decision makers from LinkedIn profile URLs with the QuickEnrich API.
 
 ## Features
 
 - Server-side QuickEnrich API calls so production secrets are not exposed in the browser
-- Dataset Search across multiple selected job titles with duplicate contact merging
+- LinkedIn profile enrichment using QuickEnrich Employee Search and Phone Search
 - Typed API wrapper functions for Dataset Search, Employee Search, Phone Search, Reverse Email Lookup, and Contact Finder
-- Searchable, sortable, paginated results table
+- Searchable, sortable results table for enriched contacts
 - Has Email and Has Phone filters
 - Row selection with copy emails, copy phones, and CSV export
 - Export selected contacts only when rows are selected
@@ -44,7 +44,7 @@ Configure QUICKENRICH_API_KEY in your hosting provider server environment variab
 
 API base URL defaults to https://app.quickenrich.io/api.
 
-The API service lives in services/quickenrich.ts. It centralizes endpoint paths, authentication headers, response normalization, and user-friendly error handling. Dataset Search is currently used by the dashboard; the remaining wrapper functions are ready for future workflows.
+The API service lives in services/quickenrich.ts. It centralizes endpoint paths, authentication headers, response normalization, and user-friendly error handling. The dashboard currently uses Employee Search and Phone Search for LinkedIn profile enrichment; the remaining wrapper functions are ready for future workflows.
 
 Endpoint defaults are based on the QuickEnrich docs at https://app.quickenrich.io/docs. Path environment overrides are available if QuickEnrich changes route names:
 
@@ -54,10 +54,18 @@ Endpoint defaults are based on the QuickEnrich docs at https://app.quickenrich.i
 - QUICKENRICH_REVERSE_EMAIL_PATH defaults to /employees/email-search
 - QUICKENRICH_CONTACT_FINDER_PATH defaults to /employees/contact-finder
 
+## LinkedIn Enrichment
+
+Paste a person profile URL such as:
+
+https://www.linkedin.com/in/person-name
+
+Company pages such as /company/... are rejected before any QuickEnrich call is made.
+
 ## Keyboard Shortcuts
 
-- / focuses company website
-- Ctrl + Enter or Cmd + Enter searches contacts
+- / focuses LinkedIn profile URL
+- Ctrl + Enter or Cmd + Enter enriches the profile
 - E exports current results
 
 ## Future Enhancements

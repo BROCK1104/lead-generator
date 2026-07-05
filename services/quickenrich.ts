@@ -97,9 +97,32 @@ function extractContacts(payload: QuickEnrichEnvelope): QuickEnrichRawContact[] 
       for (const key of ["contacts", "results", "employees", "data"]) {
         if (Array.isArray(nested[key])) return nested[key] as QuickEnrichRawContact[];
       }
+      if (["first_name", "last_name", "name", "full_name", "email", "employee_linkedin", "linkedin_url"].some((key) => typeof nested[key] === "string")) {
+        return [nested as QuickEnrichRawContact];
+      }
     }
   }
   return [];
+}
+
+function mergeRawContacts(...contacts: Array<QuickEnrichRawContact | undefined>) {
+  const merged: QuickEnrichRawContact = {};
+
+  for (const contact of contacts) {
+    if (!contact) continue;
+    for (const [key, value] of Object.entries(contact)) {
+      if (typeof value === "string") {
+        const cleaned = value.trim();
+        if (cleaned && cleaned.toLowerCase() !== "n/a") {
+          merged[key] = cleaned;
+        }
+      } else if (value !== undefined && value !== null) {
+        merged[key] = value;
+      }
+    }
+  }
+
+  return merged;
 }
 
 export async function datasetSearch(input: QuickEnrichSearchInput, apiKey?: string): Promise<Contact[]> {
@@ -138,6 +161,20 @@ export async function reverseEmailLookup(email: string, apiKey?: string) {
 
 export async function contactFinder(filters: Record<string, unknown>, apiKey?: string) {
   return requestPost<QuickEnrichEnvelope>(endpoints.contactFinder, filters, apiKey);
+}
+
+export async function enrichLinkedInProfile(linkedinUrl: string, apiKey?: string) {
+  const employeePayload = await employeeSearch({ website: "", linkedinUrl }, apiKey);
+  const phonePayload = await phoneSearch({ website: "", linkedinUrl }, apiKey).catch(() => ({} as QuickEnrichEnvelope));
+  const employee = extractContacts(employeePayload)[0];
+  const phone = extractContacts(phonePayload)[0];
+
+  if (!employee && !phone) return null;
+
+  const raw = mergeRawContacts(employee, phone, { employee_linkedin: linkedinUrl });
+  const website = typeof raw.company_url === "string" ? raw.company_url : typeof raw.domain === "string" ? raw.domain : "";
+
+  return normalizeContact(raw, website || "linkedin.com", typeof raw.title === "string" ? raw.title : undefined);
 }
 
 export async function searchDatasetForTitles(input: Required<Pick<QuickEnrichSearchInput, "website" | "titles">>, apiKey?: string) {
